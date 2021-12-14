@@ -1,29 +1,19 @@
-import { Connection, clusterApiUrl, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { clusterApiUrl } from "@solana/web3.js";
 import {
   getParsedNftAccountsByOwner,
   isValidSolanaAddress,
   createConnectionConfig,
 } from "@nfteyez/sol-rayz";
 import axios from "axios";
-import http from "http";
-//create a connection of devnet
-const createConnection = () => {
-  return new Connection(clusterApiUrl("devnet"));
-};
+import express from "express";
 
+var app = express();
 const port = 3000;
 
-const requestHandler = (request, response) => {
-  response.end("Hello Node.js Server!");
-};
-
-const server = http.createServer(requestHandler);
-
-const getAllNftData = async () => {
+const getAllNftData = async (token) => {
   try {
-    // if (connectData === true) {
     const connect = createConnectionConfig(clusterApiUrl("mainnet-beta"));
-    let ownerToken = "7oAw3KSBeuuXb4p6KZL2BmnHbnXUzoF8dxAkXTMbMaiP";
+    let ownerToken = token;
     const result = isValidSolanaAddress(ownerToken);
     const nfts = await getParsedNftAccountsByOwner({
       publicAddress: ownerToken,
@@ -37,16 +27,15 @@ const getAllNftData = async () => {
   }
 };
 
-const getNftTokenData = async () => {
+const getNftTokenData = async (token) => {
   try {
-    let nftData = await getAllNftData();
+    let nftData = await getAllNftData(token);
     var data = Object.keys(nftData).map((key) => nftData[key]);
     let arr = [];
     let n = data.length;
     for (let i = 0; i < n; i++) {
       let val = await axios.get(data[i].data.uri);
-      console.log(val.data);
-      arr.push(val);
+      arr.push(val.data);
     }
     return arr;
   } catch (error) {
@@ -54,12 +43,14 @@ const getNftTokenData = async () => {
   }
 };
 
-server.listen(port, async (err) => {
+app.get("/:token", async (req, res) => {
+  let response = await getNftTokenData(req.params.token);
+  res.send(response);
+});
+
+app.listen(port, async (err) => {
   if (err) {
     return console.log("something bad happened", err);
   }
-
-  getNftTokenData();
-
   console.log(`server is listening on ${port}`);
 });
