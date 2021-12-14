@@ -25,7 +25,6 @@ const getAllNftData = async () => {
     const connect = createConnectionConfig(clusterApiUrl("mainnet-beta"));
     let ownerToken = "7oAw3KSBeuuXb4p6KZL2BmnHbnXUzoF8dxAkXTMbMaiP";
     const result = isValidSolanaAddress(ownerToken);
-    console.log("result", result);
     const nfts = await getParsedNftAccountsByOwner({
       publicAddress: ownerToken,
       connection: connect,
