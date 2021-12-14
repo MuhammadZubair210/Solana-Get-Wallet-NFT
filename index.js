@@ -8,7 +8,7 @@ import axios from "axios";
 import express from "express";
 
 var app = express();
-const port = 3000;
+const port = process.env.PORT ||  3000;
 
 const getAllNftData = async (token) => {
   try {
