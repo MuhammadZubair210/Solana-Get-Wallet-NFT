@@ -8,7 +8,7 @@ import axios from "axios";
 import express from "express";
 
 var app = express();
-const port = process.env.PORT ||  3000;
+const port = process.env.PORT || 3000;
 
 const getAllNftData = async (token) => {
   try {
@@ -33,11 +33,20 @@ const getNftTokenData = async (token) => {
     var data = Object.keys(nftData).map((key) => nftData[key]);
     let arr = [];
     let n = data.length;
+    let obj = {};
     for (let i = 0; i < n; i++) {
+      // console.log(data[i].data)
       let val = await axios.get(data[i].data.uri);
-      arr.push(val.data);
+
+      obj[data[i].data["symbol"]] =
+        obj[data[i].data["symbol"]] && obj[data[i].data["symbol"]].length > 0
+          ? [...obj[data[i].data["symbol"]], val.data]
+          : [val.data];
+      // .push(val.data);
+      // let symbol = val.data["symbol"]
+      //  symbol= arr.push(val.data);
     }
-    return arr;
+    return obj;
   } catch (error) {
     console.log(error);
   }
