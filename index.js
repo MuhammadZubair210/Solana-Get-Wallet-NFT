@@ -50,10 +50,10 @@ const getNftTokenData = async (token) => {
     console.log(error);
   }
 };
-getNftTokenData("7oAw3KSBeuuXb4p6KZL2BmnHbnXUzoF8dxAkXTMbMaiP");
+// getNftTokenData("7oAw3KSBeuuXb4p6KZL2BmnHbnXUzoF8dxAkXTMbMaiP");
 
 app.get("/:token", async (req, res) => {
-  let response = await getAllNftData(req.params.token);
+  let response = await getNftTokenData(req.params.token);
   res.send(response);
 });
 
