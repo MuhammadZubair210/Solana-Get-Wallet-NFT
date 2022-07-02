@@ -4,7 +4,9 @@ import {
 } from "@nfteyez/sol-rayz";
 import axios from "axios";
 import express from "express";
-import express from "twitter-lite";
+import Twitter from "twitter-lite";
+import DotEnv from "dotenv";
+DotEnv.config();
 
 var app = express();
 const port = process.env.PORT || 3000;
@@ -33,7 +35,6 @@ const getNftTokenData = async (token) => {
   try {
     let nftData = await getAllNftData(token);
     var data = nftData;
-    let arr = [];
     let n = data.length;
     let obj = {};
     for (let i = 0; i < n; i++) {
@@ -52,6 +53,23 @@ const getNftTokenData = async (token) => {
 app.get("/:token", async (req, res) => {
   let response = await getNftTokenData(req.params.token);
   res.send(response);
+});
+
+app.get("/tweets/:username", async (req, res) => {
+  try {
+    let response = await user.getBearerToken();
+    const twit = new Twitter({
+      bearer_token: response.access_token,
+    });
+    response = await twit.get(`/search/tweets`, {
+      q: req.params.username,
+      lang: "en",
+      count: 100,
+    });
+    res.status(200).send(response);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 app.listen(port, async (err) => {
